@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
   int beltDelay;
 
   double P, error, setpoint = 0, piAlign; // alignment P
-  double pShooter, errorShooter, setShooter = -8, piShooter; // shooter P
+  double pShooter, errorShooter, setShooter = -2, piShooter; // shooter P
 
 
   @Override
@@ -225,7 +225,7 @@ public class Robot extends TimedRobot {
       shootRun = !shootRun;
     }
     if (shootRun == true) {
-      solo.set(-.85);
+      solo.set(-.75);
     } else {
       solo.set(0);
     }
@@ -268,9 +268,9 @@ public class Robot extends TimedRobot {
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDs() { 
-    pShooter = .038; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
-    errorShooter = setShooter - Math.abs(camy);
-    if (pShooter*errorShooter > -.75) {
+    pShooter = .035; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
+    errorShooter = setShooter - camy;  // difference between 
+    if (pShooter*errorShooter < .75) {
       piShooter = .75; // Look at PIDa for comments
     } else {
       piShooter = pShooter*errorShooter;
