@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
 
   int beltDelay;
 
-  double P, error, setpoint = 0, piAlign; // alignment P
+  double P, I, alignIntegral, error, setpoint = 0, piAlign; // alignment P
   double pShooter, errorShooter, setShooter = -2, piShooter; // shooter P
 
 
@@ -173,6 +173,18 @@ public class Robot extends TimedRobot {
     } else if (camx > -1 && camx < 1) {
       aligned = true;
     } 
+/*
+    if (camx > -1 && camx < 1) {
+      aligned = true;
+    } else if (camx > 1 ) {
+      right.set(0);
+      left.set(Math.abs(piAlign));
+      aligned = false;
+    } else if (camx < -1) {
+      right.set(-piAlign);
+      left.set(0);
+      aligned = false;
+    } */
     ///////////////////////////////////////////ALIGNMENT
     ///////////////////////////////////////////SHOOTER
     if (aligned == true) {
@@ -258,12 +270,15 @@ public class Robot extends TimedRobot {
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDa() {
     P =.03; // Change higher for less speed and lower for slower speed, change in very very small stages (like .01 small stages)
+    I = .02; // Need to change this
     error = setpoint - camx;
-    if (Math.abs(P*error) < .15) {
+    alignIntegral += (error*.02);
+    /*if (Math.abs(P*error) < .15) {
       piAlign = .15; // This is the minimun speed for the motors to go, change this and the number in the line right above this (I wouldn't go below .15)
     } else {
-      piAlign = P*error;
-    }
+      
+    } */
+    piAlign = P*error + I*alignIntegral;
     return piAlign; //IDK if this branch works
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
