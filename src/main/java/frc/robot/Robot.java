@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Relay.*;
+import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Robot extends TimedRobot {
@@ -87,14 +89,19 @@ public class Robot extends TimedRobot {
   DigitalInput b2 = new DigitalInput(1);
   DigitalInput b3 = new DigitalInput(2);
 
+  Gyro Gyromy = new AnalogGyro(0);
+  double gyrangle;
+
   int beltDelay;
 
-  double P, error, setpoint = 0, piAlign; // alignment P
+  double P, I, alignIntegral, error, setpoint = 0, piAlign; // alignment P
   double pShooter, errorShooter, setShooter = -2, piShooter; // shooter P
 
 
   @Override
   public void robotInit() {
+  //  Shuffleboard.getTab("Gyro?").add((Sendable) Gyromy);
+
     // Does the most important part of our code
   }
 
@@ -107,6 +114,8 @@ public class Robot extends TimedRobot {
     vertAngle = tvert.getDouble(0);
     targetWidth = thor.getDouble(0);
 
+    gyrangle = Gyromy.getAngle();
+
   SmartDashboard.putNumber("LimelightX", camx);
   SmartDashboard.putNumber("LimelightY", camy);
   NetworkTableInstance.getDefault();
@@ -118,6 +127,8 @@ public class Robot extends TimedRobot {
   PDP.getTotalCurrent();
   PDP.getTotalEnergy();
   PDP.getTotalPower();
+
+  SmartDashboard.putNumber("Gyro",gyrangle);
 
   SmartDashboard.putData(PDP);
   }
@@ -224,8 +235,9 @@ public class Robot extends TimedRobot {
 	if (joy.getRawButtonPressed(3)) {
       shootRun = !shootRun;
     }
+    PIDa();
     if (shootRun == true) {
-      solo.set(-.75);
+      solo.set(-PIDs());
     } else {
       solo.set(0);
     }
@@ -268,13 +280,15 @@ public class Robot extends TimedRobot {
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDs() { 
-    pShooter = .035; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
+    pShooter = .0218; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
     errorShooter = setShooter - camy;  // difference between 
-    if (pShooter*errorShooter < .75) {
+    
+    if (pShooter*errorShooter + .75 < .75) {
       piShooter = .75; // Look at PIDa for comments
     } else {
-      piShooter = pShooter*errorShooter;
+      piShooter = pShooter*errorShooter + .75;
     }
+
     return Math.abs(piShooter);
   }
 }
