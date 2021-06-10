@@ -163,6 +163,11 @@ public class Robot extends TimedRobot {
     PIDa();
     PIDs();
     ///////////////////////////////////////////ALIGNMENT
+
+
+    right.set(0);
+    left.set(0.25);
+    /*
     if (camx > 1) {
       right.set(0);
       left.set(Math.abs(piAlign));
@@ -173,27 +178,8 @@ public class Robot extends TimedRobot {
     } else if (camx > -1 && camx < 1) {
       aligned = true;
     } 
-/*
-    if (camx > -1.25 && camx < 1.25) {
-      aligned = true;
-    } else if (camx > .75 ) {
-      right.set(0);
-      left.set(Math.abs(piAlign));
-      aligned = false;
-    } else if (camx < -.75) {
-      right.set(-piAlign);
-      left.set(0);
-      aligned = false;
-    } */
-    ///////////////////////////////////////////ALIGNMENT
-    ///////////////////////////////////////////SHOOTER
-    /*if (aligned == true) {
-      solo.set(-PIDs());
-    } else {
-      solo.set(0);
-    } */                    // MIN DISTANCE IS 6.8\\
-    ///////////////////////////////////////////SHOOTER
-    ///////////////////////////////////////////BELT
+    //*/
+
     if (aligned == true && beltDelay >= 100) {
       belt.set(Value.kReverse);
     } else if (aligned == true && beltDelay < 100) { // I WANT ENCODER SO WE CAN DO THIS A LOT BETTER AND AUTOMATICALLY
@@ -250,7 +236,7 @@ public class Robot extends TimedRobot {
       belt.set(Value.kForward);
     } else if (joy.getRawButton(8)) {
       belt.set(Value.kReverse);
-    } else if (joy.getRawButton(4) == true && tv == 1) {// Moves us into auto-shooting if button is pressed
+    } else if (joy.getRawButton(4) == true /*&& tv == 1*/) {// Moves us into auto-shooting if button is pressed
       autoShoot();
     } else {
       aligned = false;
