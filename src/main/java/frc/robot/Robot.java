@@ -174,24 +174,24 @@ public class Robot extends TimedRobot {
       aligned = true;
     } 
 /*
-    if (camx > -1 && camx < 1) {
+    if (camx > -1.25 && camx < 1.25) {
       aligned = true;
-    } else if (camx > 1 ) {
+    } else if (camx > .75 ) {
       right.set(0);
       left.set(Math.abs(piAlign));
       aligned = false;
-    } else if (camx < -1) {
+    } else if (camx < -.75) {
       right.set(-piAlign);
       left.set(0);
       aligned = false;
     } */
     ///////////////////////////////////////////ALIGNMENT
     ///////////////////////////////////////////SHOOTER
-    if (aligned == true) {
+    /*if (aligned == true) {
       solo.set(-PIDs());
     } else {
       solo.set(0);
-    }                     // MIN DISTANCE IS 6.8\\
+    } */                    // MIN DISTANCE IS 6.8\\
     ///////////////////////////////////////////SHOOTER
     ///////////////////////////////////////////BELT
     if (aligned == true && beltDelay >= 100) {
@@ -269,7 +269,7 @@ public class Robot extends TimedRobot {
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDa() {
-    P =.03; // Change higher for less speed and lower for slower speed, change in very very small stages (like .01 small stages)
+    P =.07; // Change higher for less speed and lower for slower speed, change in very very small stages (like .01 small stages)
     I = .02; // Need to change this
     error = setpoint - camx;
     alignIntegral += (error*.02);
