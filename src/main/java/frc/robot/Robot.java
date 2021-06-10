@@ -163,14 +163,14 @@ public class Robot extends TimedRobot {
     PIDa();
     PIDs();
     ///////////////////////////////////////////ALIGNMENT
-    if (camx > 2) {
+    if (camx > 1) {
       right.set(0);
       left.set(Math.abs(piAlign));
       aligned = false;
-    } else if (camx < .5) {
+    } else if (camx < -1) {
       right.set(-piAlign);
       left.set(0);
-    } else if (camx > .5 && camx < 2) {
+    } else if (camx > -1 && camx < 1) {
       aligned = true;
     } 
     ///////////////////////////////////////////ALIGNMENT
@@ -264,7 +264,7 @@ public class Robot extends TimedRobot {
     } else {
       piAlign = P*error;
     }
-    return piAlign;
+    return piAlign; //IDK if this branch works
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDs() { 
