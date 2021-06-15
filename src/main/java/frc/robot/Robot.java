@@ -116,11 +116,14 @@ public class Robot extends TimedRobot {
 
     gyrangle = Gyromy.getAngle();
 
+    Boolean b3bool = b3.get();
+
   SmartDashboard.putNumber("LimelightX", camx);
   SmartDashboard.putNumber("LimelightY", camy);
   NetworkTableInstance.getDefault();
   SmartDashboard.putBoolean("Aligned", aligned);
   SmartDashboard.putNumber("PIShooter", piShooter);
+  SmartDashboard.putBoolean("b3", b3bool);
 
   PDP.getVoltage();
   PDP.getTemperature();
@@ -277,12 +280,12 @@ public class Robot extends TimedRobot {
       piAlign = P*error;
     }
     return piAlign;//*/
-    piAlign = Math.abs(camx)/20+.15;
+    piAlign = Math.abs(camx)/20+.15+0.0075*(camy+2);
     return piAlign;
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDs() { 
-    pShooter = .024; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
+    pShooter = .0218; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
     errorShooter = setShooter - camy;  // difference between 
     
     if (pShooter*errorShooter + .75 < .75) {
