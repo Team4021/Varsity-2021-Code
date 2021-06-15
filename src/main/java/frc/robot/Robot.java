@@ -178,10 +178,10 @@ public class Robot extends TimedRobot {
       right.set(0);
       left.set(Math.abs(piAlign));
       aligned = false;
-    } else if (camx < .5) {
+    } else if (camx < -2) {
       right.set(-piAlign);
       left.set(0);
-    } else if (camx > .5 && camx < 2) {
+    } else if (camx > -2 & camx < 2) {
       aligned = true;
     } 
     ///////////////////////////////////////////ALIGNMENT
@@ -193,9 +193,9 @@ public class Robot extends TimedRobot {
     }                     // MIN DISTANCE IS 6.8\\
     ///////////////////////////////////////////SHOOTER
     ///////////////////////////////////////////BELT
-    if (aligned == true && beltDelay >= 100) {
+    if (aligned == true && beltDelay >= 150) {
       belt.set(Value.kReverse);
-    } else if (aligned == true && beltDelay < 100) { // I WANT ENCODER SO WE CAN DO THIS A LOT BETTER AND AUTOMATICALLY
+    } else if (aligned == true && beltDelay < 150) { // I WANT ENCODER SO WE CAN DO THIS A LOT BETTER AND AUTOMATICALLY
       belt.set(Value.kOff);
       ++beltDelay;
     } else {
@@ -269,18 +269,20 @@ public class Robot extends TimedRobot {
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDa() {
-    P =.03; // Change higher for less speed and lower for slower speed, change in very very small stages (like .01 small stages)
+    /*P =.03; // Change higher for less speed and lower for slower speed, change in very very small stages (like .01 small stages)
     error = setpoint - camx;
     if (Math.abs(P*error) < .15) {
       piAlign = .15; // This is the minimun speed for the motors to go, change this and the number in the line right above this (I wouldn't go below .15)
     } else {
       piAlign = P*error;
     }
+    return piAlign;//*/
+    piAlign = Math.abs(camx)/20+.15;
     return piAlign;
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDs() { 
-    pShooter = .0218; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
+    pShooter = .024; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
     errorShooter = setShooter - camy;  // difference between 
     
     if (pShooter*errorShooter + .75 < .75) {
