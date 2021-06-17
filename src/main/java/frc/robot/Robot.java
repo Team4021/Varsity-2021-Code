@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -14,7 +13,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Relay.*;
-import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Robot extends TimedRobot {
@@ -89,8 +87,9 @@ public class Robot extends TimedRobot {
   DigitalInput b2 = new DigitalInput(1);
   DigitalInput b3 = new DigitalInput(2);
 
-  Gyro Gyromy = new AnalogGyro(0);
-  double gyrangle;
+  boolean b3Limit = false;
+  boolean b3bool;
+
 
   int beltDelay;
 
@@ -114,26 +113,20 @@ public class Robot extends TimedRobot {
     vertAngle = tvert.getDouble(0);
     targetWidth = thor.getDouble(0);
 
-    gyrangle = Gyromy.getAngle();
+    b3bool = b3.get();
+    if(b3bool)
+      b3Limit = true;
+    
 
-    Boolean b3bool = b3.get();
-
-  SmartDashboard.putNumber("LimelightX", camx);
-  SmartDashboard.putNumber("LimelightY", camy);
+  SmartDashboard.putNumber("LimelightX", (Math.round(100*camx))/100d);
+  SmartDashboard.putNumber("LimelightY", (Math.round(100*camy))/100d);
   NetworkTableInstance.getDefault();
   SmartDashboard.putBoolean("Aligned", aligned);
   SmartDashboard.putNumber("PIShooter", piShooter);
+  SmartDashboard.putBoolean("b3Limit", b3Limit);
   SmartDashboard.putBoolean("b3", b3bool);
 
-  PDP.getVoltage();
-  PDP.getTemperature();
-  PDP.getTotalCurrent();
-  PDP.getTotalEnergy();
-  PDP.getTotalPower();
 
-  SmartDashboard.putNumber("Gyro",gyrangle);
-
-  SmartDashboard.putData(PDP);
   }
 
   @Override
@@ -196,14 +189,17 @@ public class Robot extends TimedRobot {
     }                     // MIN DISTANCE IS 6.8\\
     ///////////////////////////////////////////SHOOTER
     ///////////////////////////////////////////BELT
-    if (aligned == true && beltDelay >= 150) {
+    if (b3bool) {
+      beltDelay = 0;
+    } else if (aligned == true && beltDelay >= 100) {
       belt.set(Value.kReverse);
-    } else if (aligned == true && beltDelay < 150) { // I WANT ENCODER SO WE CAN DO THIS A LOT BETTER AND AUTOMATICALLY
+    } else if (aligned == true && beltDelay < 100) { // I WANT ENCODER SO WE CAN DO THIS A LOT BETTER AND AUTOMATICALLY
       belt.set(Value.kOff);
       ++beltDelay;
     } else {
       belt.set(Value.kOff);
     } 
+
     ///////////////////////////////////////////BELT
   }
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -255,6 +251,8 @@ public class Robot extends TimedRobot {
       belt.set(Value.kReverse);
     } else if (joy.getRawButton(4) == true && tv == 1) {// Moves us into auto-shooting if button is pressed
       autoShoot();
+    } else if (joy.getRawAxis(2) > .5 || joy.getRawAxis(3) > .5) {
+      solo.set(.5);
     } else {
       aligned = false;
       belt.set(Value.kOff);
@@ -281,11 +279,11 @@ public class Robot extends TimedRobot {
     }
     return piAlign;//*/
     piAlign = Math.abs(camx)/20+.15+0.0075*(camy+2);
-    return piAlign;
+    return 2*piAlign/3;
   }
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   public double PIDs() { 
-    pShooter = .0218; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
+    pShooter = .02; // Change higher for higher speed and lower for lower speed, also change in very small incraments idk if this is how you spell
     errorShooter = setShooter - camy;  // difference between 
     
     if (pShooter*errorShooter + .75 < .75) {
