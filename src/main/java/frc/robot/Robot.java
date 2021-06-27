@@ -119,7 +119,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     camx = tx.getDouble(0.0);
-    camx2 = tx2.getDouble(0.0);
     camy = ty.getDouble(0.0);
     camarea = ta.getDouble(0.0);
     vertAngle = tvert.getDouble(0);
