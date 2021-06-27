@@ -15,12 +15,16 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Relay.*;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.cscore.UsbCamera;
 
 public class Robot extends TimedRobot {
   private static final String leftSide = "Default";
   private static final String rightSide = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  UsbCamera Cam0;
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   NetworkTable lemon = NetworkTableInstance.getDefault().getTable("limelight-lemon");
@@ -35,7 +39,7 @@ public class Robot extends TimedRobot {
   NetworkTableEntry getpipe = table.getEntry("getpipe"); // this tells us what "pipeline" we are on, basically different settings for the camera
   NetworkTableEntry ts = table.getEntry("ts"); // skew or rotation of target
 
-  NetworkTableEntry tx2 = lemon.getEntry("tx"); // angle on x-axis from the crosshairs on the object to origin
+  /*NetworkTableEntry tx2 = lemon.getEntry("tx"); // angle on x-axis from the crosshairs on the object to origin
   NetworkTableEntry ty2 = lemon.getEntry("ty"); // angle on x-axis from the crosshairs on the object to origin
   NetworkTableEntry ta2 = lemon.getEntry("ta"); // area of the object
   NetworkTableEntry tv2 = lemon.getEntry("tv"); // 1 if have vision 0 if no vision
@@ -44,7 +48,7 @@ public class Robot extends TimedRobot {
   NetworkTableEntry tvert2 = lemon.getEntry("tvert"); // vertical distance
   NetworkTableEntry thor2 = lemon.getEntry("thor"); // horizontal distance
   NetworkTableEntry getpipe2 = lemon.getEntry("getpipe"); // this tells us what "pipeline" we are on, basically different settings for the camera
-  NetworkTableEntry ts2 = lemon.getEntry("ts"); // skew or rotation of target
+  NetworkTableEntry ts2 = lemon.getEntry("ts"); // skew or rotation of target */
 
   Joystick joy = new Joystick(0);
 
@@ -181,6 +185,8 @@ public class Robot extends TimedRobot {
     pizza = joy.getRawAxis(1);
     taco = joy.getRawAxis(4);
     buffet.arcadeDrive(-pizza, taco);
+
+    Cam0 = CameraServer.getInstance().startAutomaticCapture(0);
 		
     lift();
 		
