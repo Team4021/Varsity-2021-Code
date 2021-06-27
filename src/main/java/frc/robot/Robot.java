@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -16,6 +17,11 @@ import edu.wpi.first.wpilibj.Relay.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Robot extends TimedRobot {
+  private static final String leftSide = "Default";
+  private static final String rightSide = "My Auto";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   NetworkTable lemon = NetworkTableInstance.getDefault().getTable("limelight-lemon");
   NetworkTableEntry tx = table.getEntry("tx"); // angle on x-axis from the crosshairs on the object to origin
@@ -92,6 +98,8 @@ public class Robot extends TimedRobot {
 
 
   int beltDelay;
+  int autonomooseDelay = 0;
+  int soloCount = 0;
 
   double P, I, alignIntegral, error, setpoint = 0, piAlign; // alignment P
   double pShooter, errorShooter, setShooter = -2, piShooter; // shooter P
@@ -99,9 +107,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-  //  Shuffleboard.getTab("Gyro?").add((Sendable) Gyromy);
-
-    // Does the most important part of our code
+  m_chooser.setDefaultOption("Default Auto", leftSide);
+  m_chooser.addOption("My Auto", rightSide);
+  SmartDashboard.putData("Auto choices", m_chooser);
   }
 
   @Override
@@ -131,18 +139,41 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    m_autoSelected = m_chooser.getSelected();
+    System.out.println("Auto Selected" + m_autoSelected);
 
   }
 
   @Override
   public void autonomousPeriodic() {
     final double tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    if (camy > -8 && camy < -10) { // Moves back away from auto line then goes into auto shoot
-      buffet.arcadeDrive(.75, 0);
-      intake.set(-.25);
-    } else if (tv == 1) {
-      autoShoot();
-    }
+    switch (m_autoSelected) {
+      case rightSide:
+        if (autonomooseDelay <= 50) {
+          buffet.arcadeDrive(.5, 0);
+          ++autonomooseDelay;
+        } else if (autonomooseDelay > 50 && tv == 1 && soloCount <= 3) {
+          autoShoot();
+        } else if (autonomooseDelay > 50 && tv == 0) {
+          buffet.arcadeDrive(0, -.15);
+        } else {
+          buffet.arcadeDrive(0, 0);
+        }
+            break;
+          case leftSide:
+          default:
+          if (autonomooseDelay <= 50) {
+            buffet.arcadeDrive(.5, 0);
+            ++autonomooseDelay;
+          } else if (autonomooseDelay > 50 && tv == 1 && soloCount <= 3) {
+            autoShoot();
+          } else if (autonomooseDelay > 50 && tv == 0) {
+            buffet.arcadeDrive(0, .15);
+          } else {
+            buffet.arcadeDrive(0, 0);
+          }
+          break;
+    } 
   }
 	/*-=-=-=-=-=-= -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
   @Override
